@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Tạo chiến dịch</h2>
+
+<form action="../api/campaign_create.php" method="POST">
+
+    <input
+        name="title"
+        placeholder="Tên chiến dịch">
+
+    <br><br>
+
+    <textarea
+        name="description"
+        placeholder="Mô tả"></textarea>
+
+    <br><br>
+
+    <input
+        type="number"
+        name="target_amount"
+        placeholder="Mục tiêu gây quỹ">
+
+    <br><br>
+
+    <input
+        type="date"
+        name="start_date">
+
+    <br><br>
+
+    <input
+        type="date"
+        name="end_date">
+
+    <br><br>
+
+    <button type="submit">
+        Tạo chiến dịch
+    </button>
+
+</form>
+
+</body>
+</html>
