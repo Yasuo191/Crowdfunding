@@ -1,5 +1,5 @@
 <?php
+
 require_once "../controllers/CampaignController.php";
 require_once "../config/database.php";
-$controller = new CampaignController($pdo);
-$controller->update();
+(new CampaignController($pdo))->adminCampaigns();

@@ -58,4 +58,14 @@ class DonationService
     {
         return $this->donation->getUserDonations($userId);
     }
+
+    public function getCampaignDonations($campaignId)
+{
+    return $this->donation->getCampaignDonations($campaignId);
+}
+
+public function getAllDonations()
+{
+    return $this->donation->getAllDonations();
+}
 }

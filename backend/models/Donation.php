@@ -67,4 +67,49 @@ class Donation
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Lấy danh sách lượt quyên góp của một chiến dịch
+    public function getCampaignDonations($campaignId)
+    {
+        $sql = "
+            SELECT
+                u.username,
+                d.amount,
+                d.message,
+                d.donated_at
+            FROM donations d
+            JOIN users u
+                ON d.user_id = u.id
+            WHERE d.campaign_id = ?
+            ORDER BY d.donated_at DESC
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$campaignId]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllDonations()
+{
+    $sql = "
+        SELECT
+            d.id,
+            u.username,
+            c.title AS campaign_title,
+            d.amount,
+            d.message,
+            d.donated_at
+        FROM donations d
+        JOIN users u
+            ON d.user_id = u.id
+        JOIN campaigns c
+            ON d.campaign_id = c.id
+        ORDER BY d.donated_at DESC
+    ";
+
+    $stmt = $this->pdo->query($sql);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }

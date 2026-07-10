@@ -12,6 +12,7 @@ $sql =
 SELECT
 id,
 username,
+email,
 password_hash,
 role
 FROM users
@@ -24,21 +25,27 @@ $stmt->execute([$email]);
 
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if(
-    $user &&
-    password_verify(
-        $password,
-        $user["password_hash"]
-    )
-)
+// --- ĐOẠN ĐÃ THAY THẾ THEO YÊU CẦU ---
+header("Content-Type: application/json; charset=UTF-8");
+
+if($user && password_verify($password, $user["password_hash"]))
 {
     $_SESSION["user_id"] = $user["id"];
     $_SESSION["username"] = $user["username"];
+    $_SESSION["email"] = $user["email"];
     $_SESSION["role"] = $user["role"];
 
-    echo "Đăng nhập thành công";
+    echo json_encode([
+        "success" => true,
+        "message" => "Đăng nhập thành công"
+    ]);
 }
 else
 {
-    echo "Sai email hoặc mật khẩu";
+    http_response_code(401);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Sai email hoặc mật khẩu"
+    ]);
 }

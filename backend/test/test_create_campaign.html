@@ -4,7 +4,11 @@
 
 <h2>Tạo chiến dịch</h2>
 
-<form action="../api/campaign_create.php" method="POST">
+<form
+
+action="http://localhost/crowdfunding/backend/api/campaign_create.php"
+method="POST"
+enctype="multipart/form-data">
 
     <input
         name="title"
@@ -17,7 +21,19 @@
         placeholder="Mô tả"></textarea>
 
     <br><br>
+Ảnh chiến dịch
 
+<br>
+
+<input
+
+type="file"
+
+name="image"
+
+accept="image/*">
+
+<br><br>
     <input
         type="number"
         name="target_amount"

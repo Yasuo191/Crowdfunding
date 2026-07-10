@@ -15,13 +15,22 @@ class CampaignService
      * Tạo chiến dịch mới
      */
     public function createCampaign(
-        $creatorId,
-        $title,
-        $description,
-        $targetAmount,
-        $startDate,
-        $endDate
-    ) {
+
+$creatorId,
+
+$title,
+
+$description,
+
+$targetAmount,
+
+$image,
+
+$startDate,
+
+$endDate
+)
+    {
         if (empty($title)) {
             return "Tên chiến dịch không được để trống";
         }
@@ -31,13 +40,22 @@ class CampaignService
         }
 
         $result = $this->campaign->create(
-            $creatorId,
-            $title,
-            $description,
-            $targetAmount,
-            $startDate,
-            $endDate
-        );
+
+$creatorId,
+
+$title,
+
+$description,
+
+$targetAmount,
+
+$image,
+
+$startDate,
+
+$endDate
+
+);
 
         return $result ? true : "Không thể tạo chiến dịch";
     }
@@ -124,4 +142,29 @@ class CampaignService
 
         return $result ? true : "Không thể xóa chiến dịch";
     }
+
+    public function getMyCampaigns($userId)
+{
+    return $this->campaign->getByCreator($userId);
+}
+
+public function searchCampaign($keyword)
+{
+    return $this->campaign->search($keyword);
+}
+
+public function getAllCampaignsForAdmin()
+{
+    return $this->campaign->getAllForAdmin();
+}
+
+public function restoreCampaign($id)
+{
+    return $this->campaign->restore($id);
+}
+
+public function completeCampaign($id)
+{
+    return $this->campaign->complete($id);
+}
 }

@@ -1,5 +1,4 @@
 <?php
-
 require_once "../config/database.php";
 require_once "../services/DonationService.php";
 
@@ -9,56 +8,80 @@ class DonationController
 
     public function __construct(PDO $pdo)
     {
+        if (session_status() === PHP_SESSION_NONE) session_start();
         $this->service = new DonationService($pdo);
     }
 
-    /**
-     * Thực hiện hành động quyên góp tiền
-     */
     public function donate()
     {
-        session_start();
+        header("Content-Type: application/json; charset=UTF-8");
 
         if (!isset($_SESSION["user_id"])) {
-            die("Bạn chưa đăng nhập");
+            http_response_code(401);
+            echo json_encode(["success"=>false,"message"=>"Bạn chưa đăng nhập"], JSON_UNESCAPED_UNICODE);
+            exit;
         }
 
-        $campaignId = $_POST["campaign_id"];
-        $amount = $_POST["amount"];
-        $message = $_POST["message"];
+        $campaignId = $_POST["campaign_id"] ?? null;
+        $amount     = $_POST["amount"] ?? 0;
+        $message    = $_POST["message"] ?? "";
 
-        $result = $this->service->donate(
-            $_SESSION["user_id"],
-            $campaignId,
-            $amount,
-            $message
-        );
+        $result = $this->service->donate($_SESSION["user_id"], $campaignId, $amount, $message);
 
         if ($result === true) {
-            echo "Quyên góp thành công";
+            echo json_encode(["success"=>true,"message"=>"Quyên góp thành công"], JSON_UNESCAPED_UNICODE);
         } else {
-            echo $result;
+            http_response_code(400);
+            echo json_encode(["success"=>false,"message"=>$result], JSON_UNESCAPED_UNICODE);
         }
     }
 
-    /**
-     * Xem lịch sử quyên góp của người dùng hiện tại (Đầu ra JSON)
-     */
     public function history()
     {
-        session_start();
-
-        if (!isset($_SESSION["user_id"])) {
-            die("Bạn chưa đăng nhập");
-        }
-
-        $history = $this->service->getUserDonations($_SESSION["user_id"]);
-
         header("Content-Type: application/json; charset=UTF-8");
 
+        if (!isset($_SESSION["user_id"])) {
+            http_response_code(401);
+            echo json_encode(["success"=>false,"message"=>"Bạn chưa đăng nhập"], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
         echo json_encode(
-            $history,
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+            $this->service->getUserDonations($_SESSION["user_id"]),
+            JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE
+        );
+    }
+
+    public function campaignDonations()
+    {
+        header("Content-Type: application/json; charset=UTF-8");
+        $campaignId = $_GET["id"] ?? null;
+
+        echo json_encode(
+            $this->service->getCampaignDonations($campaignId),
+            JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE
+        );
+    }
+
+    public function adminDonations()
+    {
+        header("Content-Type: application/json; charset=UTF-8");
+
+        if (!isset($_SESSION["user_id"])) {
+            http_response_code(401);
+            echo json_encode(["success"=>false,"message"=>"Bạn chưa đăng nhập"], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        if ($_SESSION["role"] !== "admin") {
+            http_response_code(403);
+            echo json_encode(["success"=>false,"message"=>"Bạn không có quyền truy cập chức năng này"], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        echo json_encode(
+            $this->service->getAllDonations(),
+            JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE
         );
     }
 }

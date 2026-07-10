@@ -1,19 +1,29 @@
 <?php
 
+require_once "../config/database.php";
+
 session_start();
 
-if(isset($_SESSION["user_id"]))
-{
-    echo "Xin chào "
-        . $_SESSION["username"];
+header("Content-Type: application/json; charset=UTF-8");
 
-    echo "<br><br>";
+if (!isset($_SESSION["user_id"])) {
 
-    echo "<a href='logout.php'>
-            Đăng xuất
-          </a>";
+    http_response_code(401);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Chưa đăng nhập"
+    ], JSON_UNESCAPED_UNICODE);
+
+    exit;
 }
-else
-{
-    echo "Chưa đăng nhập";
-}
+
+echo json_encode([
+    "success" => true,
+    "user" => [
+        "id" => $_SESSION["user_id"],
+        "username" => $_SESSION["username"] ?? "",
+        "email" => $_SESSION["email"] ?? "",
+        "role" => $_SESSION["role"]
+    ]
+], JSON_UNESCAPED_UNICODE);
