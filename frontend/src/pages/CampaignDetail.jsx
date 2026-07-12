@@ -45,14 +45,14 @@ function CampaignDetail() {
             alert(res.data.message);
             window.location.reload();
         } catch (err) {
-    console.log(err);
+            console.log(err);
 
-    if (err.response && err.response.data.message) {
-        alert(err.response.data.message);
-    } else {
-        alert("Quyên góp thất bại");
-    }
-}
+            if (err.response && err.response.data.message) {
+                alert(err.response.data.message);
+            } else {
+                alert("Quyên góp thất bại");
+            }
+        }
     };
 
     if (!campaign) {
@@ -76,29 +76,56 @@ function CampaignDetail() {
             <p><b>Đã quyên góp:</b> {campaign.current_amount} VNĐ</p>
 
             <progress
-                value={campaign.current_amount}
+                value={Math.min(
+                    Number(campaign.current_amount),
+                    Number(campaign.target_amount)
+                )}
                 max={campaign.target_amount}
                 style={{ width: "100%", height: "25px" }}
             ></progress>
 
-            <p>{((campaign.current_amount / campaign.target_amount) * 100).toFixed(2)}%</p>
+            <p>
+                {Math.min(
+                    (campaign.current_amount / campaign.target_amount) * 100,
+                    100
+                ).toFixed(2)}%
+            </p>
 
             <hr />
-            <h2>Quyên góp</h2>
-            <input
-                type="number"
-                placeholder="Số tiền"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-            />
-            <br /><br />
-            <textarea
-                placeholder="Lời nhắn"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-            />
-            <br /><br />
-            <button onClick={donate}>Quyên góp</button>
+            {campaign.status === "active" ? (
+                <>
+                    <h2>Quyên góp</h2>
+
+                    <input
+                        type="number"
+                        placeholder="Số tiền"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                    />
+
+                    <br /><br />
+
+                    <textarea
+                        placeholder="Lời nhắn"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                    />
+
+                    <br /><br />
+
+                    <button onClick={donate}>
+                        Quyên góp
+                    </button>
+                </>
+            ) : campaign.status === "completed" ? (
+                <h2 style={{ color: "green" }}>
+                    ✅ Chiến dịch đã hoàn thành
+                </h2>
+            ) : (
+                <h2 style={{ color: "red" }}>
+                    🚫 Chiến dịch hiện không thể nhận quyên góp
+                </h2>
+            )}
 
             <hr />
             <h2>Lịch sử quyên góp</h2>
@@ -115,7 +142,11 @@ function CampaignDetail() {
             )}
 
             <p style={{ marginTop: "20px" }}>
-                <b>Trạng thái:</b> {campaign.status}
+                <b>Trạng thái:</b>{" "}
+                {campaign.status === "active" && "Đang hoạt động"}
+                {campaign.status === "pending" && "Đang chờ duyệt"}
+                {campaign.status === "completed" && "✅ Đã hoàn thành"}
+                {campaign.status === "deleted" && "🚫 Đã xóa"}
             </p>
         </div>
     );
