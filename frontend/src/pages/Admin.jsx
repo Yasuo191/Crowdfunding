@@ -160,8 +160,8 @@ function Admin() {
             {donations.map(d => (
               <tr key={d.id}>
                 <td>{d.id}</td>
-                <td>{d.user}</td>
-                <td>{d.campaign}</td>
+                <td>{d.username}</td>
+                <td>{d.campaign_title}</td>
                 <td>{d.amount}</td>
               </tr>
             ))}
