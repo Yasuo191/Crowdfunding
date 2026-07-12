@@ -45,9 +45,14 @@ function CampaignDetail() {
             alert(res.data.message);
             window.location.reload();
         } catch (err) {
-            console.log(err);
-            alert("Quyên góp thất bại");
-        }
+    console.log(err);
+
+    if (err.response && err.response.data.message) {
+        alert(err.response.data.message);
+    } else {
+        alert("Quyên góp thất bại");
+    }
+}
     };
 
     if (!campaign) {
