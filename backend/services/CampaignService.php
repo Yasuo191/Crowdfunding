@@ -168,11 +168,35 @@ public function getAllCampaignsForAdmin()
 
 public function restoreCampaign($id)
 {
+    $campaign = $this->campaign->getById($id);
+
+    if (!$campaign) {
+        return "Chiến dịch không tồn tại";
+    }
+
+    if ($campaign["status"] !== "deleted") {
+        return "Chỉ có thể khôi phục chiến dịch đã xóa";
+    }
+
     return $this->campaign->restore($id);
 }
 
 public function completeCampaign($id)
 {
+    $campaign = $this->campaign->getById($id);
+
+    if (!$campaign) {
+        return "Chiến dịch không tồn tại";
+    }
+
+    if ($campaign["status"] === "completed") {
+        return "Chiến dịch đã hoàn thành";
+    }
+
+    if ($campaign["status"] === "deleted") {
+        return "Không thể hoàn thành chiến dịch đã xóa";
+    }
+
     return $this->campaign->complete($id);
 }
 }

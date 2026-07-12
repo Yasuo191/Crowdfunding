@@ -141,37 +141,49 @@ public function delete()
         echo json_encode($this->service->getAllCampaignsForAdmin(), JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
     }
 
-    public function restore()
-    {
-        $this->checkAuth();
-        if ($_SESSION["role"]!="admin") {
-            http_response_code(403);
-            echo json_encode(["success"=>false,"message"=>"Không có quyền"], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-        header("Content-Type: application/json; charset=UTF-8");
-        if ($this->service->restoreCampaign($_POST["id"])) {
-            echo json_encode(["success"=>true,"message"=>"Khôi phục thành công"], JSON_UNESCAPED_UNICODE);
-        } else {
-            http_response_code(400);
-            echo json_encode(["success"=>false,"message"=>"Khôi phục thất bại"], JSON_UNESCAPED_UNICODE);
-        }
+public function restore()
+{
+    $this->checkAuth();
+    if ($_SESSION["role"]!="admin") {
+        http_response_code(403);
+        echo json_encode(["success"=>false,"message"=>"Không có quyền"], JSON_UNESCAPED_UNICODE);
+        exit;
     }
+    header("Content-Type: application/json; charset=UTF-8");
 
-    public function complete()
-    {
-        $this->checkAuth();
-        if ($_SESSION["role"]!="admin") {
-            http_response_code(403);
-            echo json_encode(["success"=>false,"message"=>"Không có quyền"], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-        header("Content-Type: application/json; charset=UTF-8");
-        if ($this->service->completeCampaign($_POST["id"])) {
-            echo json_encode(["success"=>true,"message"=>"Chiến dịch đã hoàn thành"], JSON_UNESCAPED_UNICODE);
-        } else {
-            http_response_code(400);
-            echo json_encode(["success"=>false,"message"=>"Lỗi"], JSON_UNESCAPED_UNICODE);
-        }
+    $result = $this->service->restoreCampaign($_POST["id"] ?? null);
+
+    if ($result === true) {
+        echo json_encode(["success"=>true,"message"=>"Khôi phục thành công"], JSON_UNESCAPED_UNICODE);
+    } else {
+        http_response_code(400);
+        echo json_encode([
+            "success"=>false,
+            "message"=>$result
+        ], JSON_UNESCAPED_UNICODE);
     }
+}
+
+public function complete()
+{
+    $this->checkAuth();
+    if ($_SESSION["role"]!="admin") {
+        http_response_code(403);
+        echo json_encode(["success"=>false,"message"=>"Không có quyền"], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    header("Content-Type: application/json; charset=UTF-8");
+
+    $result = $this->service->completeCampaign($_POST["id"] ?? null);
+
+    if ($result === true) {
+        echo json_encode(["success"=>true,"message"=>"Chiến dịch đã hoàn thành"], JSON_UNESCAPED_UNICODE);
+    } else {
+        http_response_code(400);
+        echo json_encode([
+            "success"=>false,
+            "message"=>$result
+        ], JSON_UNESCAPED_UNICODE);
+    }
+}
 }
