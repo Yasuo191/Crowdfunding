@@ -35,6 +35,12 @@ class Dashboard
                  WHERE status='active'"
             )->fetchColumn(),
 
+            "completed_campaigns" =>
+            $this->pdo->query(
+                "SELECT COUNT(*) FROM campaigns
+                 WHERE status='completed'"
+            )->fetchColumn(),
+
             "deleted_campaigns" =>
             $this->pdo->query(
                 "SELECT COUNT(*) FROM campaigns
@@ -50,7 +56,28 @@ class Dashboard
             $this->pdo->query(
                 "SELECT IFNULL(SUM(amount),0)
                  FROM donations"
-            )->fetchColumn()
+            )->fetchColumn(),
+
+            "campaign_progress" =>
+            $this->pdo->query(
+                "SELECT
+                    title,
+                    current_amount,
+                    target_amount
+                 FROM campaigns
+                 WHERE status <> 'deleted'
+                 ORDER BY created_at DESC"
+            )->fetchAll(PDO::FETCH_ASSOC),
+
+            "donation_by_day" =>
+            $this->pdo->query(
+                "SELECT
+                    DATE(donated_at) AS day,
+                    SUM(amount) AS total
+                 FROM donations
+                 GROUP BY DATE(donated_at)
+                 ORDER BY day"
+            )->fetchAll(PDO::FETCH_ASSOC)
 
         ];
     }
