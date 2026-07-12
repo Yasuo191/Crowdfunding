@@ -1,0 +1,24 @@
+# 1. Chặn thư mục test của dự án
+test/
+tests/
+testing/
+
+# 2. Chặn các file build và thư viện của React + Vite
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# 3. Chặn các file cấu hình môi trường chứa API Key bảo mật
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 4. Chặn file rác của hệ điều hành và trình duyệt code
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

@@ -37,28 +37,62 @@ class UserController
     }
 
     // Đổi quyền
-    public function updateRole(): void
-    {
-        header("Content-Type: application/json; charset=UTF-8");
-
-        $id   = $_POST["id"]   ?? null;
-        $role = $_POST["role"] ?? null;
-
-        $result = $this->service->updateRole($id, $role);
-
-        if ($result) {
-            echo json_encode([
-                "success" => true,
-                "message" => "Cập nhật quyền thành công"
-            ], JSON_UNESCAPED_UNICODE);
-        } else {
-            http_response_code(400);
-            echo json_encode([
-                "success" => false,
-                "message" => "Lỗi"
-            ], JSON_UNESCAPED_UNICODE);
-        }
+public function updateRole(): void
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
     }
+
+    if (!isset($_SESSION["user_id"])) {
+        http_response_code(401);
+        echo json_encode([
+            "success" => false,
+            "message" => "Bạn chưa đăng nhập"
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    if ($_SESSION["role"] !== "admin") {
+        http_response_code(403);
+        echo json_encode([
+            "success" => false,
+            "message" => "Không có quyền"
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    header("Content-Type: application/json; charset=UTF-8");
+
+    $id   = $_POST["id"]   ?? null;
+    $role = $_POST["role"] ?? null;
+
+    // Không cho phép tự hạ quyền của chính mình
+    if ($id == $_SESSION["user_id"] && ($role ?? "") != "admin") {
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Không thể tự hạ quyền của chính mình"
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $result = $this->service->updateRole($id, $role);
+
+    if ($result) {
+        echo json_encode([
+            "success" => true,
+            "message" => "Cập nhật quyền thành công"
+        ], JSON_UNESCAPED_UNICODE);
+    } else {
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Lỗi"
+        ], JSON_UNESCAPED_UNICODE);
+    }
+}
+
+
 
     // Đăng nhập
     public function login(): void

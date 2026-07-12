@@ -66,6 +66,14 @@ function Admin() {
     loadCampaigns();
   };
 
+  const updateUserRole = async (u) => {
+    const formData = new FormData();
+    formData.append("id", u.id);
+    formData.append("role", u.role === "admin" ? "user" : "admin");
+    await api.post("update_role.php", formData).catch(console.log);
+    loadUsers();
+  };
+
   return (
     <div style={{ padding: 20 }}>
       <h1>Admin Dashboard</h1>
@@ -131,6 +139,7 @@ function Admin() {
               <th>Username</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -140,6 +149,12 @@ function Admin() {
                 <td>{u.username}</td>
                 <td>{u.email}</td>
                 <td>{u.role}</td>
+                <td>
+                  {u.role === "user" &&
+                    <button onClick={() => updateUserRole(u)}>Đặt làm Admin</button>}
+                  {u.role === "admin" &&
+                    <button onClick={() => updateUserRole(u)}>Đặt làm User</button>}
+                </td>
               </tr>
             ))}
           </tbody>
