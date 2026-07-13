@@ -7,6 +7,7 @@ function Admin() {
   const [campaigns, setCampaigns] = useState([]);
   const [users, setUsers] = useState([]);
   const [donations, setDonations] = useState([]);
+  const [statistics, setStatistics] = useState(null);
   const [tab, setTab] = useState("campaign");
 
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ function Admin() {
     loadCampaigns();
     loadUsers();
     loadDonations();
+    loadStatistics();
   }, [user, loading]);
 
   const loadCampaigns = async () => {
@@ -58,6 +60,15 @@ function Admin() {
     }
   };
 
+  const loadStatistics = async () => {
+    try {
+      const res = await api.get("dashboard.php");
+      setStatistics(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const action = async (url, id, confirmMsg) => {
     if (confirmMsg && !window.confirm(confirmMsg)) return;
     const form = new FormData();
@@ -77,6 +88,25 @@ function Admin() {
   return (
     <div style={{ padding: 20 }}>
       <h1>Admin Dashboard</h1>
+
+      {statistics && (
+        <div
+          style={{
+            display: "flex",
+            gap: "20px",
+            margin: "20px 0",
+            flexWrap: "wrap"
+          }}
+        >
+          <div><b>Users</b><br />{statistics.total_users}</div>
+          <div><b>Campaigns</b><br />{statistics.total_campaigns}</div>
+          <div><b>Donations</b><br />{statistics.total_donations}</div>
+          <div>
+            <b>Total Amount</b><br />
+            {Number(statistics.total_amount).toLocaleString()} VNĐ
+          </div>
+        </div>
+      )}
 
       <div style={{ marginBottom: 20 }}>
         <button onClick={() => setTab("campaign")}>Chiến dịch</button>
