@@ -9,11 +9,14 @@ function CampaignDetail() {
     const [amount, setAmount] = useState("");
     const [message, setMessage] = useState("");
     const [favorite, setFavorite] = useState(false);
+    const [comments, setComments] = useState([]);
+    const [content, setContent] = useState("");
 
     useEffect(() => {
         loadCampaign();
         loadDonations();
         loadFavorite();
+        loadComments();
     }, [id]);
 
     const loadCampaign = async () => {
@@ -59,6 +62,46 @@ function CampaignDetail() {
         }
     };
 
+    const loadComments = async () => {
+        try {
+            const res = await api.get("get_comments.php?campaign_id=" + id);
+            if (Array.isArray(res.data)) {
+                setComments(res.data);
+            } else {
+                setComments([]);
+            }
+        } catch (err) {
+            console.log(err);
+            setComments([]);
+        }
+    };
+
+    const addComment = async () => {
+        if (!content.trim()) {
+            alert("Nhập nội dung bình luận");
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append("campaign_id", id);
+            formData.append("content", content);
+
+            const res = await api.post("add_comment.php", formData);
+
+            alert(res.data.message);
+            setContent("");
+            loadComments();
+        } catch (err) {
+            console.log(err);
+            if (err.response?.data?.message) {
+                alert(err.response.data.message);
+            } else {
+                alert("Không thể bình luận");
+            }
+        }
+    };
+
     const donate = async () => {
         try {
             const formData = new FormData();
@@ -74,7 +117,6 @@ function CampaignDetail() {
             window.location.reload();
         } catch (err) {
             console.log(err);
-
             if (err.response && err.response.data.message) {
                 alert(err.response.data.message);
             } else {
@@ -127,36 +169,25 @@ function CampaignDetail() {
             {campaign.status === "active" ? (
                 <>
                     <h2>Quyên góp</h2>
-
                     <input
                         type="number"
                         placeholder="Số tiền"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                     />
-
                     <br /><br />
-
                     <textarea
                         placeholder="Lời nhắn"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     />
-
                     <br /><br />
-
-                    <button onClick={donate}>
-                        Quyên góp
-                    </button>
+                    <button onClick={donate}>Quyên góp</button>
                 </>
             ) : campaign.status === "completed" ? (
-                <h2 style={{ color: "green" }}>
-                    ✅ Chiến dịch đã hoàn thành
-                </h2>
+                <h2 style={{ color: "green" }}>✅ Chiến dịch đã hoàn thành</h2>
             ) : (
-                <h2 style={{ color: "red" }}>
-                    🚫 Chiến dịch hiện không thể nhận quyên góp
-                </h2>
+                <h2 style={{ color: "red" }}>🚫 Chiến dịch hiện không thể nhận quyên góp</h2>
             )}
 
             <hr />
@@ -171,6 +202,37 @@ function CampaignDetail() {
                 ))
             ) : (
                 <p>Chưa có lượt quyên góp.</p>
+            )}
+
+            <hr />
+            <h2>Bình luận</h2>
+            <textarea
+                rows="3"
+                style={{ width: "100%" }}
+                placeholder="Nhập bình luận..."
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+            />
+            <br /><br />
+            <button onClick={addComment}>Gửi bình luận</button>
+            <br /><br />
+            {comments.length > 0 ? (
+                comments.map(comment => (
+                    <div
+                        key={comment.id}
+                        style={{
+                            border: "1px solid #ccc",
+                            padding: "10px",
+                            marginBottom: "10px"
+                        }}
+                    >
+                        <b>{comment.username}</b>
+                        <p>{comment.content}</p>
+                        <small>{comment.created_at}</small>
+                    </div>
+                ))
+            ) : (
+                <p>Chưa có bình luận.</p>
             )}
 
             <p style={{ marginTop: "20px" }}>
