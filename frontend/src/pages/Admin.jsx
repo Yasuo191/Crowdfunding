@@ -171,7 +171,15 @@ function Admin() {
       {tab === "reports" && (
         <div>
           <h2>Báo cáo tài chính</h2>
-
+          <div style={{ marginBottom: 15 }}>
+    <a
+        href="http://localhost/crowdfunding/backend/api/export_financial_report.php"
+        target="_blank"
+        rel="noreferrer"
+    >
+        <button>Xuất CSV</button>
+    </a>
+</div>
           <div style={{ marginBottom: 20 }}>
             <input type="number" placeholder="Campaign ID" value={campaignId} onChange={e => setCampaignId(e.target.value)} />
             <input type="number" placeholder="Thu" value={income} onChange={e => setIncome(e.target.value)} />
