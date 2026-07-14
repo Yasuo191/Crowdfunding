@@ -300,4 +300,27 @@ public function complete($id)
 
     return $stmt->execute([$id]);
 }
+
+public function getAllActive()
+{
+    $sql = "
+        SELECT *
+        FROM campaigns
+        WHERE status = 'active'
+        ORDER BY created_at DESC
+    ";
+    $stmt = $this->pdo->query($sql);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+public function getAllActiveAndCompleted()
+{
+    $sql = "
+        SELECT *
+        FROM campaigns
+        WHERE status IN ('active','completed')
+        ORDER BY created_at DESC
+    ";
+    $stmt = $this->pdo->query($sql);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }
