@@ -8,28 +8,56 @@ function CampaignDetail() {
     const [donations, setDonations] = useState([]);
     const [amount, setAmount] = useState("");
     const [message, setMessage] = useState("");
+    const [favorite, setFavorite] = useState(false);
 
     useEffect(() => {
-        api.get("campaign_detail.php?id=" + id)
-            .then((res) => {
-                setCampaign(res.data);
-            })
-            .catch(err => {
-                console.log(err);
-            });
-
-        api.get("campaign_donations.php?id=" + id)
-            .then((res) => {
-                if (Array.isArray(res.data)) {
-                    setDonations(res.data);
-                } else {
-                    setDonations([]);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-            });
+        loadCampaign();
+        loadDonations();
+        loadFavorite();
     }, [id]);
+
+    const loadCampaign = async () => {
+        try {
+            const res = await api.get("campaign_detail.php?id=" + id);
+            setCampaign(res.data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const loadDonations = async () => {
+        try {
+            const res = await api.get("campaign_donations.php?id=" + id);
+            if (Array.isArray(res.data)) {
+                setDonations(res.data);
+            } else {
+                setDonations([]);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const loadFavorite = async () => {
+        try {
+            const res = await api.get(`is_favorite.php?campaign_id=${id}`);
+            setFavorite(res.data.favorite);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const toggleFavorite = async () => {
+        try {
+            const formData = new FormData();
+            formData.append("campaign_id", id);
+
+            const res = await api.post("toggle_favorite.php", formData);
+            setFavorite(res.data.status === "added");
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     const donate = async () => {
         try {
@@ -62,6 +90,10 @@ function CampaignDetail() {
     return (
         <div style={{ padding: "20px" }}>
             <h1>{campaign.title}</h1>
+            <button onClick={toggleFavorite} style={{ marginBottom: "10px" }}>
+                {favorite ? "💖 Bỏ yêu thích" : "🤍 Yêu thích"}
+            </button>
+
             {campaign.image_url && (
                 <img
                     src={"http://localhost/crowdfunding/backend/uploads/" + campaign.image_url}

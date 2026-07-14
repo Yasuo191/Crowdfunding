@@ -39,6 +39,7 @@ function Navbar() {
       {user && (
         <>
           <Link to="/dashboard">Dashboard</Link>
+          <Link to="/favorites">Yêu thích</Link>
           {user.role === "admin" && <Link to="/admin">Admin</Link>}
           <button
             onClick={logout}

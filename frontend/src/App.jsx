@@ -8,7 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import CreateCampaign from "./pages/CreateCampaign";
 import EditCampaign from "./pages/EditCampaign";
-
+import MyFavorites from "./pages/MyFavorites"; 
 function App() {
     return (
         <>
@@ -19,15 +19,10 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/campaign/:id" element={<CampaignDetail />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route
-                        path="/edit-campaign/:id"
-                        element={<EditCampaign />}
-                    />
-                    <Route
-                        path="/admin"
-                        element={<Admin/>}
-                    />
+                <Route path="/edit-campaign/:id" element={<EditCampaign />} />
+                <Route path="/admin" element={<Admin />} />
                 <Route path="/create-campaign" element={<CreateCampaign />} />
+                <Route path="/favorites" element={<MyFavorites />} />
             </Routes>
         </>
     );
