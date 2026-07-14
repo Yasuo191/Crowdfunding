@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { user, loadProfile } = useAuth();
 
@@ -14,6 +15,20 @@ function Login() {
   }, [user, navigate]);
 
   const login = async () => {
+    console.log("login clicked"); // Bước 1
+
+    if (!email.trim()) {
+      console.log("empty email"); // Bước 2
+      setError("Vui lòng nhập email.");
+      return;
+    }
+
+    if (!password.trim()) {
+      console.log("empty password"); // Bước 3
+      setError("Vui lòng nhập mật khẩu.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("email", email);
     formData.append("password", password);
@@ -23,12 +38,22 @@ function Login() {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
-      await loadProfile();   // cập nhật context
-      alert(res.data.message);
+      console.log("API response:", res.data); // log dữ liệu trả về từ backend
+
+      if (res.data.success) {
+        await loadProfile();
+        alert("Đăng nhập thành công");
+        navigate("/");
+      } else {
+        setError(res.data.message);
+      }
     } catch (err) {
-      console.log(err);
-      console.log(err.response);
-      console.log(err.response?.data);
+      console.log("API error:", err);
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Không thể kết nối tới máy chủ.");
+      }
     }
   };
 
@@ -51,6 +76,11 @@ function Login() {
       />
       <br /><br />
       <button onClick={login}>Đăng nhập</button>
+      {error && (
+        <p style={{ color: "red" }}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }
