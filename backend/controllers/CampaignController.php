@@ -79,19 +79,45 @@ public function update()
     $this->checkAuth();
     header("Content-Type: application/json; charset=UTF-8");
 
-    $result = $this->service->updateCampaign(
-        $_POST["id"]??null, $_SESSION["user_id"],
-        $_POST["title"]??null, $_POST["description"]??null,
-        $_POST["target_amount"]??0, $_POST["start_date"]??null, $_POST["end_date"]??null
-    );
+    // Lấy campaign hiện tại để giữ ảnh cũ nếu không upload mới
+    $current = $this->service->getCampaignById($_POST["id"]);
+    $imageUrl = $current["image_url"] ?? null;
 
-    if ($result === true) {
-        echo json_encode(["success"=>true,"message"=>"Cập nhật thành công"], JSON_UNESCAPED_UNICODE);
-    } else {
-        http_response_code(400);
-        echo json_encode(["success"=>false,"message"=>$result], JSON_UNESCAPED_UNICODE);
+    // Nếu có file ảnh mới
+    if (isset($_FILES["image"]) && $_FILES["image"]["error"] === UPLOAD_ERR_OK) {
+        $fileName = time() . "_" . basename($_FILES["image"]["name"]);
+        $uploadPath = "../uploads/" . $fileName;
+
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $uploadPath)) {
+            $imageUrl = $fileName;
+        }
     }
+
+    $result = $this->service->updateCampaign(
+    $_POST["id"] ?? null,
+    $_SESSION["user_id"],
+    $_POST["title"] ?? null,
+    $_POST["description"] ?? null,
+    $_POST["target_amount"] ?? 0,
+    $_POST["start_date"] ?? null,
+    $_POST["end_date"] ?? null,
+    $imageUrl
+);
+
+if ($result === true) {
+    echo json_encode([
+        "success" => true,
+        "message" => "Cập nhật thành công"
+    ], JSON_UNESCAPED_UNICODE);
+} else {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => $result
+    ], JSON_UNESCAPED_UNICODE);
 }
+}
+
 
 public function delete()
 {

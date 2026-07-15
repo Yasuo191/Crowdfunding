@@ -1,0 +1,291 @@
+/* ===========================
+   COLOR PALETTE
+=========================== */
+
+:root{
+    --primary:#2563eb;
+    --primary-hover:#1d4ed8;
+
+    --success:#16a34a;
+    --warning:#f59e0b;
+    --danger:#dc2626;
+
+    /* Nền tối hơn một chút */
+    --background:#edf2f7;
+
+    --card:#ffffff;
+
+    --border:#dbe3ec;
+
+    --text:#1f2937;
+    --subtext:#6b7280;
+
+    --radius:14px;
+}
+
+
+/* ===========================
+   GLOBAL
+=========================== */
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+
+    margin:0;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:var(--background);
+
+    color:var(--text);
+
+    line-height:1.6;
+}
+
+a{
+
+    color:var(--primary);
+
+    text-decoration:none;
+
+    transition:.2s;
+}
+
+a:hover{
+
+    color:var(--primary-hover);
+}
+
+
+/* ===========================
+   BUTTON
+=========================== */
+
+button{
+
+    cursor:pointer;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:11px 20px;
+
+    background:var(--primary);
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:
+        background .25s,
+        transform .2s,
+        box-shadow .2s;
+}
+
+button:hover{
+
+    background:var(--primary-hover);
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 16px rgba(37,99,235,.18);
+}
+
+button:active{
+
+    transform:scale(.98);
+}
+
+
+/* ===========================
+   INPUT
+=========================== */
+
+input,
+textarea,
+select{
+
+    width:100%;
+
+    padding:12px 14px;
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    background:white;
+
+    font-size:15px;
+
+    transition:.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(37,99,235,.15);
+}
+
+
+/* ===========================
+   CARD
+=========================== */
+
+.card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:16px;
+
+    padding:24px;
+
+    box-shadow:
+        0 6px 20px rgba(0,0,0,.05);
+
+    transition:
+        transform .25s,
+        box-shadow .25s;
+}
+
+.card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 14px 35px rgba(0,0,0,.08);
+}
+
+
+/* ===========================
+   BADGE
+=========================== */
+
+.badge{
+
+    display:inline-block;
+
+    padding:4px 10px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+    font-weight:600;
+}
+
+.badge-success{
+
+    background:#dcfce7;
+
+    color:#166534;
+}
+
+.badge-warning{
+
+    background:#fef3c7;
+
+    color:#92400e;
+}
+
+.badge-danger{
+
+    background:#fee2e2;
+
+    color:#991b1b;
+}
+
+
+/* ===========================
+   TABLE
+=========================== */
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+    border-radius:14px;
+
+    overflow:hidden;
+}
+
+th{
+
+    background:#f8fafc;
+
+    font-weight:600;
+}
+
+th,
+td{
+
+    padding:14px;
+
+    border-bottom:1px solid var(--border);
+}
+
+
+/* ===========================
+   PAGE ANIMATION
+=========================== */
+
+.fade-up{
+
+    animation:
+        fadeUp .5s ease;
+}
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:none;
+
+    }
+}
+/* Container dùng cho toàn bộ trang */
+.container{
+    max-width:1200px;
+    margin:0 auto;
+    padding:30px 20px;
+}
+
+/* Tiêu đề chung */
+.section-title{
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:24px;
+    color:var(--text);
+}
+

@@ -1,6 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import "../styles/navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -17,45 +18,77 @@ function Navbar() {
     }
   };
 
+  const isAdmin = user && user.role === "admin";
+
   return (
-    <nav
-      style={{
-        background: "#1976d2",
-        color: "white",
-        padding: "15px",
-        display: "flex",
-        gap: "20px"
-      }}
-    >
-      <Link to="/">Trang chủ</Link>
+    <nav className="navbar">
+      <div className="navbar-container">
+        <Link to="/" className="logo">
+          Crowdfunding
+        </Link>
 
-      {!user && (
-        <>
-          <Link to="/login">Đăng nhập</Link>
-          <Link to="/register">Đăng ký</Link>
-        </>
-      )}
-
-      {user && (
-        <>
-          <Link to="/dashboard">Dashboard</Link>
-          <Link to="/favorites">Yêu thích</Link>
-          {user.role === "admin" && <Link to="/admin">Admin</Link>}
-          <button
-            onClick={logout}
-            style={{
-              background: "#d32f2f",
-              color: "white",
-              border: "none",
-              padding: "6px 12px",
-              cursor: "pointer",
-              borderRadius: "5px"
-            }}
+        <div className="nav-links">
+          <NavLink
+            to="/"
+            className={({ isActive }) => (isActive ? "active" : "")}
           >
-            Đăng xuất
-          </button>
-        </>
-      )}
+            Home
+          </NavLink>
+
+          {user && (
+            <>
+              <NavLink
+                to="/favorites"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                Favorites
+              </NavLink>
+
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                Dashboard
+              </NavLink>
+
+              {isAdmin && (
+                <NavLink
+                  to="/admin"
+                  className={({ isActive }) => (isActive ? "active" : "")}
+                >
+                  Admin
+                </NavLink>
+              )}
+
+              <button onClick={logout}>Logout</button>
+
+              <div className="user-box">
+                <span className="avatar">
+                  {user.username.charAt(0).toUpperCase()}
+                </span>
+                <span>👤 {user.username}</span>
+              </div>
+            </>
+          )}
+
+          {!user && (
+            <>
+              <NavLink
+                to="/login"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                Login
+              </NavLink>
+              <NavLink
+                to="/register"
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                Register
+              </NavLink>
+            </>
+          )}
+        </div>
+      </div>
     </nav>
   );
 }

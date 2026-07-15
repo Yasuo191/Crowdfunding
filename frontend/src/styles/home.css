@@ -1,0 +1,145 @@
+.hero {
+    background: white;
+    border-radius: 18px;
+    padding: 70px;
+    margin-bottom: 35px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.05);
+    border: 1px solid #e5e7eb;
+}
+
+.hero h1 {
+    font-size: 42px;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    width: 60%;
+    color: #6b7280;
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.hero button {
+    padding: 14px 28px;
+    font-size: 16px;
+}
+
+.campaign-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 28px;
+}
+
+/* Campaign Card mới */
+.campaign-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+    border-radius: 18px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    transition: .25s;
+    box-shadow: 0 3px 10px rgba(0,0,0,.05);
+}
+
+.campaign-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+}
+
+.campaign-image {
+    height: 220px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.campaign-body {
+    padding: 20px;
+}
+
+.campaign-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.campaign-money {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 12px;
+}
+
+.campaign-progress {
+    margin: 15px 0;
+}
+
+.progress-track {
+    height: 10px;
+    border-radius: 20px;
+    background: #e5e7eb;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    border-radius: 20px;
+}
+
+.progress-percent {
+    margin-top: 8px;
+    text-align: right;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.detail-btn {
+    width: 100%;
+    margin-top: 18px;
+}
+.pagination{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin:40px 0;
+}
+
+.pagination button{
+
+    min-width:42px;
+}
+
+.pagination .active{
+
+    background:#1d4ed8;
+}
+
+.campaign-status{
+
+position:absolute;
+
+top:15px;
+
+right:15px;
+
+background:#16a34a;
+
+color:white;
+
+padding:5px 10px;
+
+border-radius:20px;
+
+font-size:13px;
+
+font-weight:600;
+}
+.campaign-image-wrapper{
+
+position:relative;
+}

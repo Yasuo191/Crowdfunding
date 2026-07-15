@@ -3,11 +3,13 @@ import api from "../services/api";
 import MyCampaignCard from "../components/MyCampaignCard";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import "../styles/dashboard.css";
 
 function Dashboard() {
   const { user } = useAuth();
   const [campaigns, setCampaigns] = useState([]);
   const [donations, setDonations] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     loadDashboard();
@@ -16,22 +18,41 @@ function Dashboard() {
   const loadDashboard = async () => {
     api.get("my_campaigns.php")
       .then(res => setCampaigns(Array.isArray(res.data) ? res.data : []))
-      .catch(err => {
-        console.log(err);
-        setCampaigns([]);
-      });
+      .catch(() => setCampaigns([]));
 
     api.get("my_donations.php")
       .then(res => setDonations(Array.isArray(res.data) ? res.data : []))
-      .catch(err => {
-        console.log(err);
-        setDonations([]);
-      });
+      .catch(() => setDonations([]));
+
+    api.get("my_favorites.php")
+      .then(res => setFavorites(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setFavorites([]));
   };
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Dashboard</h1>
+      <div className="dashboard-header">
+        <h1>Dashboard</h1>
+        <p>
+          Welcome back, <strong>{user?.username}</strong>
+        </p>
+
+        <div className="stats-grid">
+          <div className="stat-card">
+            <span>Campaigns</span>
+            <h2>{campaigns.length}</h2>
+          </div>
+          <div className="stat-card">
+            <span>Donations</span>
+            <h2>{donations.length}</h2>
+          </div>
+          <div className="stat-card">
+            <span>Favorites</span>
+            <h2>{favorites.length}</h2>
+          </div>
+        </div>
+      </div>
+
       {user?.role === "admin" && (
         <Link to="/admin">
           <button>Admin Panel</button>
@@ -51,7 +72,7 @@ function Dashboard() {
       <hr />
 
       <h2>Chiến dịch của tôi</h2>
-      {Array.isArray(campaigns) && campaigns.length > 0 ? (
+      {campaigns.length > 0 ? (
         campaigns.map(campaign => (
           <MyCampaignCard
             key={campaign.id}
@@ -66,16 +87,9 @@ function Dashboard() {
       <hr />
 
       <h2>Lịch sử quyên góp</h2>
-      {Array.isArray(donations) && donations.length > 0 ? (
+      {donations.length > 0 ? (
         donations.map(donation => (
-          <div
-            key={donation.id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px"
-            }}
-          >
+          <div key={donation.id} className="donation-card">
             <p><b>Số tiền:</b> {donation.amount} VNĐ</p>
             <p><b>Lời nhắn:</b> {donation.message || "Không có lời nhắn"}</p>
           </div>

@@ -1,0 +1,48 @@
+.favorites-header{
+
+    margin-bottom:30px;
+}
+
+.favorites-header h1{
+
+    font-size:34px;
+
+    margin-bottom:8px;
+}
+
+.favorites-header p{
+
+    color:#64748b;
+}
+.empty-state{
+
+    background:white;
+
+    padding:70px;
+
+    text-align:center;
+
+    border-radius:18px;
+
+    border:1px dashed #cbd5e1;
+}
+.campaign-card{
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+}
+
+.campaign-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 10px 24px rgba(0,0,0,.08);
+}
+.saved{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+}

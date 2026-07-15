@@ -12,51 +12,40 @@ class Campaign
     /**
      * Tạo một chiến dịch mới
      */
-public function create(
-
-$creatorId,
-
-$title,
-
-$description,
-
-$targetAmount,
-
-$image,
-
-$startDate,
-
-$endDate
-)
-    {
-$sql = "
-    INSERT INTO campaigns
-    (
-        creator_id,
-        title,
-        description,
-        target_amount,
-        image_url,
-        start_date,
-        end_date
-    )
-    VALUES
-    (
-        ?, ?, ?, ?, ?, ?, ?
-    )
-";
+    public function create(
+        $creatorId,
+        $title,
+        $description,
+        $targetAmount,
+        $image,
+        $startDate,
+        $endDate
+    ) {
+        $sql = "
+            INSERT INTO campaigns
+            (
+                creator_id,
+                title,
+                description,
+                target_amount,
+                image_url,
+                start_date,
+                end_date
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ";
 
         $stmt = $this->pdo->prepare($sql);
 
-return $stmt->execute([
-    $creatorId,
-    $title,
-    $description,
-    $targetAmount,
-    $image,
-    $startDate,
-    $endDate
-]);
+        return $stmt->execute([
+            $creatorId,
+            $title,
+            $description,
+            $targetAmount,
+            $image,
+            $startDate,
+            $endDate
+        ]);
     }
 
     /**
@@ -78,18 +67,16 @@ return $stmt->execute([
                 c.created_at,
                 u.username AS creator
             FROM campaigns c
-            JOIN users u
-                ON c.creator_id = u.id
+            JOIN users u ON c.creator_id = u.id
             ORDER BY c.created_at DESC
         ";
 
         $stmt = $this->pdo->query($sql);
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Lấy chi tiết một chiến dịch theo ID kèm theo tên người tạo
+     * Lấy chi tiết một chiến dịch theo ID
      */
     public function getById($id)
     {
@@ -108,19 +95,17 @@ return $stmt->execute([
                 c.created_at,
                 u.username AS creator
             FROM campaigns c
-            JOIN users u
-                ON c.creator_id = u.id
+            JOIN users u ON c.creator_id = u.id
             WHERE c.id = ?
         ";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$id]);
-
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Cập nhật thông tin chiến dịch theo ID
+     * Cập nhật thông tin chiến dịch theo ID (có cả image_url)
      */
     public function update(
         $id,
@@ -128,7 +113,8 @@ return $stmt->execute([
         $description,
         $targetAmount,
         $startDate,
-        $endDate
+        $endDate,
+        $imageUrl
     ) {
         $sql = "
             UPDATE campaigns
@@ -137,7 +123,8 @@ return $stmt->execute([
                 description = ?,
                 target_amount = ?,
                 start_date = ?,
-                end_date = ?
+                end_date = ?,
+                image_url = ?
             WHERE id = ?
         ";
 
@@ -149,178 +136,122 @@ return $stmt->execute([
             $targetAmount,
             $startDate,
             $endDate,
+            $imageUrl,
             $id
         ]);
     }
 
     /**
-     * Xóa mềm chiến dịch bằng cách cập nhật trạng thái thành 'deleted'
+     * Xóa mềm chiến dịch
      */
     public function delete($id)
     {
-        $sql = "
-            UPDATE campaigns
-            SET status = 'deleted'
-            WHERE id = ?
-        ";
-
+        $sql = "UPDATE campaigns SET status = 'deleted' WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
-
         return $stmt->execute([$id]);
     }
 
-    /**
-     * Lấy danh sách các chiến dịch đang chờ duyệt
-     */
     public function getPendingCampaigns()
     {
         $sql = "
-            SELECT
-                c.*,
-                u.username AS creator
+            SELECT c.*, u.username AS creator
             FROM campaigns c
-            JOIN users u
-                ON c.creator_id = u.id
+            JOIN users u ON c.creator_id = u.id
             WHERE c.status = 'pending'
             ORDER BY c.created_at DESC
         ";
-
         $stmt = $this->pdo->query($sql);
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Duyệt chiến dịch (Chuyển sang trạng thái hoạt động)
-     */
     public function approve($id)
     {
-        $sql = "
-            UPDATE campaigns
-            SET status = 'active'
-            WHERE id = ?
-        ";
-
+        $sql = "UPDATE campaigns SET status = 'active' WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
-
         return $stmt->execute([$id]);
     }
 
-    /**
-     * Từ chối chiến dịch (Chuyển sang trạng thái xóa mềm)
-     */
     public function reject($id)
     {
-        $sql = "
-            UPDATE campaigns
-            SET status = 'deleted'
-            WHERE id = ?
-        ";
-
+        $sql = "UPDATE campaigns SET status = 'deleted' WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
-
         return $stmt->execute([$id]);
     }
 
     public function getByCreator($creatorId)
-{
-    $sql = "
-        SELECT *
-        FROM campaigns
-        WHERE creator_id = ?
-        ORDER BY created_at DESC
-    ";
+    {
+        $sql = "
+            SELECT *
+            FROM campaigns
+            WHERE creator_id = ?
+            ORDER BY created_at DESC
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$creatorId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-    $stmt = $this->pdo->prepare($sql);
-    $stmt->execute([$creatorId]);
+    public function search($keyword)
+    {
+        $sql = "
+            SELECT *
+            FROM campaigns
+            WHERE status = 'active'
+              AND title LIKE ?
+            ORDER BY created_at DESC
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(["%".$keyword."%"]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+    public function getAllForAdmin()
+    {
+        $sql = "
+            SELECT c.*, u.username
+            FROM campaigns c
+            JOIN users u ON c.creator_id = u.id
+            ORDER BY c.created_at DESC
+        ";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-public function search($keyword)
-{
-    $sql = "
-        SELECT *
-        FROM campaigns
-        WHERE
-            status = 'active'
-        AND
-            title LIKE ?
-        ORDER BY created_at DESC
-    ";
+    public function restore($id)
+    {
+        $sql = "UPDATE campaigns SET status='active' WHERE id=?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$id]);
+    }
 
-    $stmt = $this->pdo->prepare($sql);
+    public function complete($id)
+    {
+        $sql = "UPDATE campaigns SET status='completed' WHERE id=?";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([$id]);
+    }
 
-    $stmt->execute([
-        "%".$keyword."%"
-    ]);
+    public function getAllActive()
+    {
+        $sql = "
+            SELECT *
+            FROM campaigns
+            WHERE status = 'active'
+            ORDER BY created_at DESC
+        ";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-public function getAllForAdmin()
-{
-    $sql = "
-        SELECT
-            c.*,
-            u.username
-        FROM campaigns c
-        JOIN users u
-            ON c.creator_id = u.id
-        ORDER BY c.created_at DESC
-    ";
-
-    $stmt = $this->pdo->query($sql);
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-public function restore($id)
-{
-    $sql = "
-        UPDATE campaigns
-        SET status='active'
-        WHERE id=?
-    ";
-
-    $stmt=$this->pdo->prepare($sql);
-
-    return $stmt->execute([$id]);
-}
-
-public function complete($id)
-{
-    $sql = "
-        UPDATE campaigns
-        SET status='completed'
-        WHERE id=?
-    ";
-
-    $stmt=$this->pdo->prepare($sql);
-
-    return $stmt->execute([$id]);
-}
-
-public function getAllActive()
-{
-    $sql = "
-        SELECT *
-        FROM campaigns
-        WHERE status = 'active'
-        ORDER BY created_at DESC
-    ";
-    $stmt = $this->pdo->query($sql);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-public function getAllActiveAndCompleted()
-{
-    $sql = "
-        SELECT *
-        FROM campaigns
-        WHERE status IN ('active','completed')
-        ORDER BY created_at DESC
-    ";
-    $stmt = $this->pdo->query($sql);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+    public function getAllActiveAndCompleted()
+    {
+        $sql = "
+            SELECT *
+            FROM campaigns
+            WHERE status IN ('active','completed')
+            ORDER BY created_at DESC
+        ";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
