@@ -6,12 +6,21 @@ import "../styles/home.css";
 function Home() {
     const [campaigns, setCampaigns] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const pageSize = 6;
     const last = currentPage * pageSize;
     const first = last - pageSize;
-    const displayCampaigns = campaigns.slice(first, last);
-    const totalPages = Math.ceil(campaigns.length / pageSize);
+
+    
+    const filteredCampaigns = campaigns.filter((campaign) =>
+        campaign.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        campaign.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    
+    const totalPages = Math.ceil(filteredCampaigns.length / pageSize);
+    const displayCampaigns = filteredCampaigns.slice(first, last);
 
     useEffect(() => {
         api.get("campaign_list.php")
@@ -23,9 +32,7 @@ function Home() {
         <div className="container fade-up">
             {/* Hero Section */}
             <div className="card hero">
-                <h1>
-                    Support Community Projects
-                </h1>
+                <h1>Support Community Projects</h1>
                 <p>
                     Discover trusted fundraising campaigns and help
                     people turn meaningful ideas into reality.
@@ -34,9 +41,7 @@ function Home() {
                     onClick={() =>
                         document
                             .getElementById("campaign-grid")
-                            ?.scrollIntoView({
-                                behavior: "smooth",
-                            })
+                            ?.scrollIntoView({ behavior: "smooth" })
                     }
                 >
                     Explore Campaigns
@@ -44,9 +49,20 @@ function Home() {
             </div>
 
             {/* Section Title */}
-            <h2 className="section-title">
-                Active Campaigns
-            </h2>
+            <h2 className="section-title">Active Campaigns</h2>
+
+            {/* Search Bar */}
+            <div className="search-bar">
+                <input
+                    type="text"
+                    placeholder="Search campaigns..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(1); // reset về trang 1 khi tìm kiếm
+                    }}
+                />
+            </div>
 
             {/* Campaign Grid */}
             <div id="campaign-grid" className="campaign-grid">
@@ -60,19 +76,15 @@ function Home() {
                         <div key={campaign.id} className="card campaign-card">
                             {campaign.image_url && (
                                 <img
-    className="campaign-image"
-    src={`http://localhost/crowdfunding/backend/uploads/${campaign.image_url}`}
-    alt={campaign.title}
-/>
+                                    className="campaign-image"
+                                    src={`http://localhost/crowdfunding/backend/uploads/${campaign.image_url}`}
+                                    alt={campaign.title}
+                                />
                             )}
 
                             <div className="campaign-body">
-                                <h3 className="campaign-title">
-                                    {campaign.title}
-                                </h3>
-                                <span className="campaign-status">
-                                    {campaign.status}
-                                </span>
+                                <h3 className="campaign-title">{campaign.title}</h3>
+                                <span className="campaign-status">{campaign.status}</span>
                                 <div className="campaign-money">
                                     {Number(campaign.current_amount).toLocaleString()}đ /
                                     {Number(campaign.target_amount).toLocaleString()}đ
@@ -85,15 +97,11 @@ function Home() {
                                             style={{ width: `${progress}%` }}
                                         ></div>
                                     </div>
-                                    <div className="progress-percent">
-                                        {progress}%
-                                    </div>
+                                    <div className="progress-percent">{progress}%</div>
                                 </div>
 
                                 <Link to={`/campaign/${campaign.id}`}>
-                                    <button className="detail-btn">
-                                        Xem chi tiết
-                                    </button>
+                                    <button className="detail-btn">Xem chi tiết</button>
                                 </Link>
                             </div>
                         </div>
